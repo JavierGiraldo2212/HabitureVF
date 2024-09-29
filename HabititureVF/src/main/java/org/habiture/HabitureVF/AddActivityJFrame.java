@@ -1,4 +1,5 @@
-package inter.main;
+package org.habiture.HabitureVF;
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,8 +16,7 @@ public class AddActivityJFrame extends JFrame {
     private JTextField nameField;
     private JDateChooser dateChooser; // Cambiar a JDateChooser
     private JComboBox<Integer> importanceComboBox;
-    private JSpinner hourSpinner; // JSpinner para horas
-    private JSpinner minuteSpinner; // JSpinner para minutos
+    private JTextField hourField;
     private JTextArea descriptionArea;
 
     /**
@@ -39,14 +39,12 @@ public class AddActivityJFrame extends JFrame {
      * Create the frame.
      */
     public AddActivityJFrame() {
-    	setBackground(Color.WHITE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 682, 402);
         contentPane = new JPanel();
-        contentPane.setBackground(Color.WHITE);
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
-        contentPane.setLayout(new GridLayout(7, 2)); // Ajustar para 7 filas
+        contentPane.setLayout(new GridLayout(6, 2));
 
         // Name field
         JLabel nameLabel = new JLabel("Nombre (Obligatorio):");
@@ -64,27 +62,14 @@ public class AddActivityJFrame extends JFrame {
         JLabel importanceLabel = new JLabel("Nivel de Importancia (1-5):");
         Integer[] importanceLevels = {1, 2, 3, 4, 5};
         importanceComboBox = new JComboBox<>(importanceLevels);
-        importanceComboBox.setBackground(Color.WHITE);
         contentPane.add(importanceLabel);
         contentPane.add(importanceComboBox);
 
         // Hour field
         JLabel hourLabel = new JLabel("Hora (Opcional):");
-        hourSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 23, 1)); // Spinner para horas (0-23)
-        hourSpinner.setBounds(10, 5, 142, 34);
-        minuteSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1)); // Spinner para minutos (0-59)
-        minuteSpinner.setBounds(171, 5, 147, 34);
-        JPanel timePanel = new JPanel();
-        timePanel.setBackground(Color.WHITE);
-        timePanel.setLayout(null);
-        timePanel.add(hourSpinner);
-        JLabel label = new JLabel(":");
-        label.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        label.setBounds(162, 8, 14, 31);
-        timePanel.add(label);
-        timePanel.add(minuteSpinner);
+        hourField = new JTextField();
         contentPane.add(hourLabel);
-        contentPane.add(timePanel);
+        contentPane.add(hourField);
 
         // Description field
         JLabel descriptionLabel = new JLabel("Descripción (Opcional):");
@@ -113,8 +98,7 @@ public class AddActivityJFrame extends JFrame {
         String name = nameField.getText().trim();
         java.util.Date date = dateChooser.getDate(); // Obtener la fecha desde JDateChooser
         Integer importance = (Integer) importanceComboBox.getSelectedItem();
-        Integer hour = (Integer) hourSpinner.getValue(); // Obtener la hora
-        Integer minute = (Integer) minuteSpinner.getValue(); // Obtener el minuto
+        String hour = hourField.getText().trim();
         String description = descriptionArea.getText().trim();
 
         // Validate required fields
@@ -129,12 +113,11 @@ public class AddActivityJFrame extends JFrame {
 
         // Process the data (e.g., store it, print it, etc.)
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String time = String.format("%02d:%02d", hour, minute); // Formatear la hora
         String message = "Actividad Agregada:\n" +
                          "Nombre: " + name + "\n" +
                          "Fecha: " + dateFormat.format(date) + "\n" +
                          "Nivel de Importancia: " + importance + "\n" +
-                         "Hora: " + time + "\n" +
+                         "Hora: " + hour + "\n" +
                          "Descripción: " + description;
 
         JOptionPane.showMessageDialog(this, message, "Éxito", JOptionPane.INFORMATION_MESSAGE);
