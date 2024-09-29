@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="HabititureVF/src"/>
+	<classpathentry kind="lib" path="HabititureVF/com.miglayout.core_11.4.0.jar"/>
+	<classpathentry kind="lib" path="HabititureVF/com.miglayout.swing_11.4.0.jar"/>
+	<classpathentry kind="output" path="HabititureVF/bin"/>
+</classpath>

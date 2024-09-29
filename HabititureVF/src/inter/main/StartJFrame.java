@@ -71,7 +71,7 @@ public class StartJFrame extends JFrame {
         btnStartButton.setPreferredSize(new Dimension(300, 100));  // Dimensiones del botón
         btnStartButton.setFont(new Font("Arial", Font.BOLD, 30));  // Fuente más grande y en negrita
         btnStartButton.setBackground(Color.decode("#94F7BE"));     // Color de fondo verde
-        btnStartButton.setForeground(Color.WHITE);                 // Color de texto blanco
+        btnStartButton.setForeground(Color.DARK_GRAY);                 // Color de texto blanco
         btnStartButton.setPreferredSize(new Dimension(300, 100));  // Dimensiones del botón
         btnStartButton.setBorder(new LineBorder(Color.WHITE, 3));  // Borde blanco de 3 píxeles
 
