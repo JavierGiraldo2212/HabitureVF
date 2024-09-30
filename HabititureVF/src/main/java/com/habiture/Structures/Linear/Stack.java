@@ -1,6 +1,8 @@
 package com.habiture.Structures.Linear;
 
+import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.List;
 
 public class Stack<E> {
     private E[] vector;
@@ -55,5 +57,13 @@ public class Stack<E> {
         E[] newVector = (E[]) new Object[vector.length * 2];
         System.arraycopy(vector, 0, newVector, 0, vector.length);
         vector = newVector;
+    }
+    
+    public List<E> toList() {
+        List<E> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(vector[i]);
+        }
+        return list;
     }
 }

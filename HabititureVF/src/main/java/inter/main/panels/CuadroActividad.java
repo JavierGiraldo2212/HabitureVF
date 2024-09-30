@@ -3,13 +3,16 @@ package inter.main.panels;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import com.habiture.Objects.Activity;
+import com.habiture.Objects.H_Fundamental;
 
 public class CuadroActividad extends JPanel {
     private Activity activity;
 
-    public CuadroActividad(Activity activity) {
+    public CuadroActividad(Activity activity, H_Fundamental fundamental, ActividadesPanel parent) {
         setBackground(new Color(255, 255, 255));
         this.activity = activity;
         setLayout(new GridLayout(0, 2));  // Configuración de 2 columnas
@@ -44,12 +47,30 @@ public class CuadroActividad extends JPanel {
 
         // Borde opcional para visualizar mejor el panel
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        JButton btnChekc = new JButton("Marcar como completado");
+        btnChekc.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                fundamental.doneActivity(getActivity());
+                parent.IniciarActividades(fundamental);
+            }
+        });
+        add(btnChekc);
         
-        JButton btnNewButton = new JButton("New button");
-        add(btnNewButton);
         
-        JButton btnNewButton_1 = new JButton("New button");
-        add(btnNewButton_1);
+        add(btnChekc);
+        
+        JButton btnDelete = new JButton("Eliminar");
+        btnDelete.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+				fundamental.removeActivity(activity);
+				parent.IniciarActividades(fundamental);
+            }
+        });
+        add(btnDelete);
+        
     }
 
 

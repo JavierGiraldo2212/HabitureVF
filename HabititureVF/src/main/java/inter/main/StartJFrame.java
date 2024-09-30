@@ -55,63 +55,60 @@ public class StartJFrame extends JFrame {
 
 		setContentPane(contentPane);
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-		
+
 		JLabel backgrounFigure = new JLabel();
 		ImageIcon icon = new ImageIcon("src/main/java/figures/StartPanel/icon.png"); // Ruta de la imagen
-        Image img = icon.getImage().getScaledInstance(800, 800, Image.SCALE_SMOOTH); // Redimensionar imagen
-        backgrounFigure.setIcon(new ImageIcon(img));
+		Image img = icon.getImage().getScaledInstance(800, 800, Image.SCALE_SMOOTH); // Redimensionar imagen
+		backgrounFigure.setIcon(new ImageIcon(img));
 		contentPane.add(backgrounFigure);
-		
+
 		JButton btnStartButton = new JButton("COMENZAR");
-		
+
 		// Personalización del botón
-        btnStartButton.setFont(new Font("Arial", Font.BOLD, 30));  // Fuente más grande y en negrita
-        btnStartButton.setBackground(Color.decode("#94F7BE"));     // Color de fondo verde
-        btnStartButton.setForeground(Color.WHITE);                 // Color de texto blanco
-        btnStartButton.setPreferredSize(new Dimension(300, 100));  // Dimensiones del botón
-        btnStartButton.setFont(new Font("Arial", Font.BOLD, 30));  // Fuente más grande y en negrita
-        btnStartButton.setBackground(Color.decode("#94F7BE"));     // Color de fondo verde
-        btnStartButton.setForeground(Color.DARK_GRAY);                 // Color de texto blanco
-        btnStartButton.setPreferredSize(new Dimension(300, 100));  // Dimensiones del botón
-        btnStartButton.setBorder(new LineBorder(Color.WHITE, 3));  // Borde blanco de 3 píxeles
+		btnStartButton.setFont(new Font("Arial", Font.BOLD, 30)); // Fuente más grande y en negrita
+		btnStartButton.setBackground(Color.decode("#94F7BE")); // Color de fondo verde
+		btnStartButton.setForeground(Color.WHITE); // Color de texto blanco
+		btnStartButton.setPreferredSize(new Dimension(300, 100)); // Dimensiones del botón
+		btnStartButton.setFont(new Font("Arial", Font.BOLD, 30)); // Fuente más grande y en negrita
+		btnStartButton.setBackground(Color.decode("#94F7BE")); // Color de fondo verde
+		btnStartButton.setForeground(Color.DARK_GRAY); // Color de texto blanco
+		btnStartButton.setPreferredSize(new Dimension(300, 100)); // Dimensiones del botón
+		btnStartButton.setBorder(new LineBorder(Color.WHITE, 3)); // Borde blanco de 3 píxeles
 
-        // Efecto de borde elevado
-        btnStartButton.setBorder(BorderFactory.createRaisedBevelBorder());
+		// Efecto de borde elevado
+		btnStartButton.setBorder(BorderFactory.createRaisedBevelBorder());
 
-        // Añadir ActionListener al botón
-        btnStartButton.addActionListener(new ActionListener() {
+		// Añadir ActionListener al botón
+		btnStartButton.addActionListener(new ActionListener() {
 
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-                // Cerrar el JFrame actual
-                dispose();
-                // Abrir el nuevo JFrame
-                mainPanel nextFrame = new mainPanel();
-                nextFrame.setVisible(true);
-            }
-        });
-		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Cerrar el JFrame actual
+				dispose();
+				// Abrir el nuevo JFrame
+				mainPanel nextFrame = new mainPanel();
+				nextFrame.setVisible(true);
+			}
+		});
+
 		contentPane.add(btnStartButton);
-		
-		
-		
-		
 	}
-	
-	 class GradientPanel extends JPanel {
-	        private static final long serialVersionUID = 1L;
 
-	        @Override
-	        protected void paintComponent(Graphics g) {
-	            super.paintComponent(g);
-	            Graphics2D g2d = (Graphics2D) g;
-	            int width = getWidth();
-	            int height = getHeight();
+	class GradientPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
 
-	            // Crear un degradado lineal de arriba (#1A3455) a abajo (#49E0FB)
-	            GradientPaint gradient = new GradientPaint(0, 0, Color.decode("#5E81AF"), 0, height, Color.decode("#49E0FB"));
-	            g2d.setPaint(gradient);
-	            g2d.fillRect(0, 0, width, height);
-	        }
-	    }
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			Graphics2D g2d = (Graphics2D) g;
+			int width = getWidth();
+			int height = getHeight();
+
+			// Crear un degradado lineal de arriba (#1A3455) a abajo (#49E0FB)
+			GradientPaint gradient = new GradientPaint(0, 0, Color.decode("#5E81AF"), 0, height,
+					Color.decode("#49E0FB"));
+			g2d.setPaint(gradient);
+			g2d.fillRect(0, 0, width, height);
+		}
+	}
 }

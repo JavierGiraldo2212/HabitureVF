@@ -1,7 +1,10 @@
 package inter.main;
 
 import inter.main.panels.ActividadesPanel;
+import inter.main.panels.HabitListPanel;
+import inter.main.panels.HistorialPanel;
 
+import com.habiture.Habits.HabitTracker;
 import com.habiture.Objects.*;
 
 import java.awt.CardLayout;
@@ -9,9 +12,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.time.LocalDate;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,9 +40,6 @@ public class mainPanel extends JFrame {
     private JPanel panelPrincipal;
     private CardLayout cardLayout;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -47,13 +53,17 @@ public class mainPanel extends JFrame {
         });
     }
 
-    /**
-     * Create the frame.
-     */
     public mainPanel() {
-    	
-    	H_Fundamental fundamental = new H_Fundamental();
-    	
+        H_Fundamental fundamental = new H_Fundamental();
+
+        Activity act1 = new Activity("Activity 1", LocalDate.of(2023, 10, 1), 3);
+        Activity act2 = new Activity("Activity 2", LocalDate.of(2023, 9, 15), 2);
+        Activity act3 = new Activity("Activity 3", LocalDate.of(2023, 11, 5), 1);
+
+        fundamental.addActivity(act1);
+        fundamental.addActivity(act2);
+        fundamental.addActivity(act3);
+        
         setTitle("Habiture");
         setIconImage(new ImageIcon("src/main/java/figures/icon.jpg").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,19 +81,45 @@ public class mainPanel extends JFrame {
 
         JLabel lblLogo = new JLabel("");
         lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
-        ImageIcon icon = new ImageIcon("src/main/java/figures/MainPanel/logo.png"); // Ruta de la imagen
-        Image img = icon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH); // Redimensionar imagen
+        ImageIcon icon = new ImageIcon("src/main/java/figures/MainPanel/logo.png");
+        Image img = icon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH);
         lblLogo.setIcon(new ImageIcon(img));
         lblLogo.setBounds(10, 11, 243, 96);
         panelLateral.add(lblLogo);
 
-        // Crear y estilizar los botones
+        cardLayout = new CardLayout();
+        panelPrincipal = new JPanel(cardLayout);
+        panelPrincipal.setBounds(262, 0, 1002, 681);
+        contentPane.add(panelPrincipal);
+
+        // Reemplaza el DefaultPanel con un panel que tenga un fondo degradado
+        GradientPanel DefaultPanel = new GradientPanel();
+        panelPrincipal.add(DefaultPanel, "Default");
+
+        JPanel panelMisActividades = new ActividadesPanel(fundamental);
+        panelMisActividades.setBackground(Color.WHITE);
+        panelPrincipal.add(panelMisActividades, "MisActividades");
+
+        HabitTracker habitTracker = new HabitTracker();
+        JPanel panelMisHabitos = new HabitListPanel(panelPrincipal, cardLayout, habitTracker);
+        panelMisHabitos.setBackground(Color.WHITE);
+        panelPrincipal.add(panelMisHabitos, "MisHabitos");
+
+        HistorialPanel panelHistorialDeActividades = new HistorialPanel(fundamental);
+        panelHistorialDeActividades.setBackground(Color.WHITE);
+        panelPrincipal.add(panelHistorialDeActividades, "HistorialDeActividades");
+
+        JPanel panelMisMotivaciones = new JPanel();
+        panelMisMotivaciones.setBackground(Color.YELLOW);
+        panelPrincipal.add(panelMisMotivaciones, "MisMotivaciones");
+
         JButton btnMisActividades = new JButton("<html>Mis Actividades</html>");
         styleButton(btnMisActividades);
         btnMisActividades.setBounds(10, 210, 243, 42);
         btnMisActividades.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                ((ActividadesPanel) panelMisActividades).IniciarActividades(fundamental);
                 showCard("MisActividades");
             }
         });
@@ -102,75 +138,46 @@ public class mainPanel extends JFrame {
 
         JButton btnHistorialDeActividades = new JButton("<html>Historial de actividades</html>");
         styleButton(btnHistorialDeActividades);
-        btnHistorialDeActividades.setBounds(10, 411, 243, 42);
+        btnHistorialDeActividades.setBounds(10, 339, 243, 42);
         btnHistorialDeActividades.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                ((HistorialPanel) panelHistorialDeActividades).IniciarActividades(fundamental);
                 showCard("HistorialDeActividades");
             }
         });
         panelLateral.add(btnHistorialDeActividades);
-
-        JButton btnmisMotivaciones = new JButton("<html>Mis Motivaciones</html>");
-        styleButton(btnmisMotivaciones);
-        btnmisMotivaciones.setBounds(10, 345, 243, 42);
-        btnmisMotivaciones.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                showCard("MisMotivaciones");
-            }
-        });
-        panelLateral.add(btnmisMotivaciones);
-
-        cardLayout = new CardLayout();
-        panelPrincipal = new JPanel(cardLayout);
-        panelPrincipal.setBounds(262, 0, 1002, 681);
-        contentPane.add(panelPrincipal);
-
-        JPanel DefaultPanel = new JPanel();
-        DefaultPanel.setBackground(Color.YELLOW);
-        panelPrincipal.add(DefaultPanel, "Default");
-        
-        
-        // Add different panels to the card layout
-        JPanel panelMisActividades = new ActividadesPanel(fundamental);
-        panelMisActividades.setBackground(Color.WHITE);
-        panelPrincipal.add(panelMisActividades, "MisActividades");
-
-        JPanel panelMisHabitos = new JPanel();
-        panelMisHabitos.setBackground(Color.LIGHT_GRAY);
-        panelPrincipal.add(panelMisHabitos, "MisHabitos");
-
-        JPanel panelHistorialDeActividades = new JPanel();
-        panelHistorialDeActividades.setBackground(Color.PINK);
-        panelPrincipal.add(panelHistorialDeActividades, "HistorialDeActividades");
-
-        JPanel panelMisMotivaciones = new JPanel();
-        panelMisMotivaciones.setBackground(Color.YELLOW);
-        panelPrincipal.add(panelMisMotivaciones, "MisMotivaciones");
     }
 
-    /**
-     * Styles a given button with predefined properties.
-     * 
-     * @param button the button to style
-     */
     private void styleButton(JButton button) {
-        button.setBackground(new Color(135, 206, 250)); // Color de fondo
-        button.setForeground(Color.BLACK); // Color del texto
-        button.setFont(new Font("Arial", Font.BOLD, 14)); // Fuente
-        button.setFocusPainted(false); // Quitar el borde al recibir el foco
-        button.setBorderPainted(false); // Quitar el borde
-        button.setOpaque(true); // Hacer el botón opaco
-        button.setPreferredSize(new Dimension(243, 42)); // Tamaño preferido
+        button.setBackground(new Color(135, 206, 250));
+        button.setForeground(Color.BLACK);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setPreferredSize(new Dimension(243, 42));
     }
 
-    /**
-     * Shows the specified card in the CardLayout.
-     * 
-     * @param cardName the name of the card to show
-     */
     private void showCard(String cardName) {
         cardLayout.show(panelPrincipal, cardName);
+    }
+}
+
+class GradientPanel extends JPanel {
+
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        int width = getWidth();
+        int height = getHeight();
+        
+        // Crear un degradado diagonal desde la esquina superior izquierda a la inferior derecha
+        GradientPaint gradient = new GradientPaint(0, 0, Color.decode("#E0FFFF"), width, height, Color.decode("#E1E5FF"));
+        g2d.setPaint(gradient);
+        g2d.fillRect(0, 0, width, height); // Rellenar el fondo con el degradado
     }
 }

@@ -20,17 +20,24 @@ public class GenericAVL<T> {
     private Node<T> insertHelper(Node<T> root, Node<T> node) {
         if (root == null) {
             return node;
-        } else if (comparator.compare(node.data, root.data) < 0) {
-            root.left = insertHelper(root.left, node);
-        } else {
-            root.right = insertHelper(root.right, node);
         }
 
-        // Update height of this ancestor node
+        // Manejo de duplicados: puedes decidir qué hacer
+        int cmp = comparator.compare(node.data, root.data);
+        if (cmp < 0) {
+            root.left = insertHelper(root.left, node);
+        } else if (cmp > 0) {
+            root.right = insertHelper(root.right, node);
+        } else {
+            // Duplicado encontrado, no se hace nada
+            return root; // O puedes optar por actualizar el nodo
+        }
+
+        // Actualizar altura
         root.height = 1 + Math.max(height(root.left), height(root.right));
 
-        // Balance the node if needed
-        return balanceNode(root, node.data);
+        // Balancear el nodo
+        return balanceNode(root);
     }
 
     public void remove(T data) {
@@ -42,12 +49,13 @@ public class GenericAVL<T> {
             return null;
         }
 
-        if (comparator.compare(data, root.data) < 0) {
+        int cmp = comparator.compare(data, root.data);
+        if (cmp < 0) {
             root.left = removeHelper(root.left, data);
-        } else if (comparator.compare(data, root.data) > 0) {
+        } else if (cmp > 0) {
             root.right = removeHelper(root.right, data);
         } else {
-            // Node to be deleted found
+            // Nodo a eliminar encontrado
             if (root.left == null || root.right == null) {
                 root = (root.left != null) ? root.left : root.right;
             } else {
@@ -61,34 +69,30 @@ public class GenericAVL<T> {
             return null;
         }
 
-        // Update height
+        // Actualizar altura
         root.height = 1 + Math.max(height(root.left), height(root.right));
 
-        // Balance the node
-        return balanceNode(root, data);
+        // Balancear el nodo
+        return balanceNode(root);
     }
 
-    private Node<T> balanceNode(Node<T> root, T data) {
+    private Node<T> balanceNode(Node<T> root) {
         int balanceFactor = getBalanceFactor(root);
 
-        // Left heavy case
+        // Caso izquierdo pesado
         if (balanceFactor > 1) {
-            if (comparator.compare(data, root.left.data) < 0) {
-                return rightRotate(root);
-            } else {
+            if (getBalanceFactor(root.left) < 0) {
                 root.left = leftRotate(root.left);
-                return rightRotate(root);
             }
+            return rightRotate(root);
         }
 
-        // Right heavy case
+        // Caso derecho pesado
         if (balanceFactor < -1) {
-            if (comparator.compare(data, root.right.data) > 0) {
-                return leftRotate(root);
-            } else {
+            if (getBalanceFactor(root.right) > 0) {
                 root.right = rightRotate(root.right);
-                return leftRotate(root);
             }
+            return leftRotate(root);
         }
 
         return root;
@@ -98,15 +102,15 @@ public class GenericAVL<T> {
         Node<T> x = y.left;
         Node<T> T2 = x.right;
 
-        // Perform rotation
+        // Realizar rotación
         x.right = y;
         y.left = T2;
 
-        // Update heights
+        // Actualizar alturas
         y.height = Math.max(height(y.left), height(y.right)) + 1;
         x.height = Math.max(height(x.left), height(x.right)) + 1;
 
-        // Return new root
+        // Devolver nueva raíz
         return x;
     }
 
@@ -114,15 +118,15 @@ public class GenericAVL<T> {
         Node<T> y = x.right;
         Node<T> T2 = y.left;
 
-        // Perform rotation
+        // Realizar rotación
         y.left = x;
         x.right = T2;
 
-        // Update heights
+        // Actualizar alturas
         x.height = Math.max(height(x.left), height(x.right)) + 1;
         y.height = Math.max(height(y.left), height(y.right)) + 1;
 
-        // Return new root
+        // Devolver nueva raíz
         return y;
     }
 
@@ -138,6 +142,9 @@ public class GenericAVL<T> {
     }
 
     private T successor(Node<T> node) {
+        if (node.right == null) {
+            return null; // Manejo de caso nulo
+        }
         node = node.right;
         while (node.left != null) {
             node = node.left;
@@ -145,7 +152,7 @@ public class GenericAVL<T> {
         return node.data;
     }
 
-    // Additional utility methods
+    // Métodos adicionales
     public void display() {
         displayHelper(root);
     }
@@ -165,9 +172,11 @@ public class GenericAVL<T> {
     private boolean searchHelper(Node<T> root, T data) {
         if (root == null) {
             return false;
-        } else if (comparator.compare(root.data, data) == 0) {
+        }
+        int cmp = comparator.compare(root.data, data);
+        if (cmp == 0) {
             return true;
-        } else if (comparator.compare(root.data, data) > 0) {
+        } else if (cmp > 0) {
             return searchHelper(root.left, data);
         } else {
             return searchHelper(root.right, data);
@@ -196,8 +205,21 @@ public class GenericAVL<T> {
         }
     }
 
-    private static class Node<T> {
+    public List<T> getSortedElements() {
+        List<T> sortedList = new ArrayList<>();
+        inOrderTraversal(root, sortedList);
+        return sortedList;
+    }
 
+    private void inOrderTraversal(Node<T> node, List<T> sortedList) {
+        if (node != null) {
+            inOrderTraversal(node.left, sortedList);
+            sortedList.add(node.data);
+            inOrderTraversal(node.right, sortedList);
+        }
+    }
+
+    private static class Node<T> {
         T data;
         Node<T> left;
         Node<T> right;

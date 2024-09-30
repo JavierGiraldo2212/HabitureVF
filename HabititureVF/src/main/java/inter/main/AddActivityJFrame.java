@@ -5,18 +5,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import com.toedter.calendar.JDateChooser; // Importar JDateChooser
+
+import com.habiture.Objects.Activity;
+import com.habiture.Objects.H_Fundamental;
+import com.toedter.calendar.JDateChooser;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 
 public class AddActivityJFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTextField nameField;
-    private JDateChooser dateChooser; // Cambiar a JDateChooser
+    private JDateChooser dateChooser;
     private JComboBox<Integer> importanceComboBox;
-    private JSpinner hourSpinner; // JSpinner para horas
-    private JSpinner minuteSpinner; // JSpinner para minutos
+    private JSpinner hourSpinner;
+    private JCheckBox hourCheckBox;
     private JTextArea descriptionArea;
 
     /**
@@ -26,7 +33,8 @@ public class AddActivityJFrame extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    AddActivityJFrame frame = new AddActivityJFrame();
+                    H_Fundamental fundamental = new H_Fundamental(); // Crear un objeto H_Fundamental válido
+                    AddActivityJFrame frame = new AddActivityJFrame(null);
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -38,61 +46,97 @@ public class AddActivityJFrame extends JFrame {
     /**
      * Create the frame.
      */
-    public AddActivityJFrame() {
-    	setBackground(Color.WHITE);
+
+    public AddActivityJFrame(H_Fundamental fundamental) {
+
+        setTitle("Agregar Actividad");
+        setIconImage(new ImageIcon("src/main/java/figures/icon.jpg").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 682, 402);
         contentPane = new JPanel();
-        contentPane.setBackground(Color.WHITE);
+        contentPane.setBackground(new Color(255, 255, 255));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
-        contentPane.setLayout(new GridLayout(7, 2)); // Ajustar para 7 filas
+        contentPane.setLayout(new GridLayout(6, 2)); // Ajustado para 6 filas
 
         // Name field
-        JLabel nameLabel = new JLabel("Nombre (Obligatorio):");
+        JLabel nameLabel = new JLabel("Nombre:");
         nameField = new JTextField();
         contentPane.add(nameLabel);
         contentPane.add(nameField);
 
         // Date field (JDateChooser)
-        JLabel dateLabel = new JLabel("Fecha (Obligatorio):");
+        JLabel dateLabel = new JLabel("Fecha:");
         dateChooser = new JDateChooser();
         contentPane.add(dateLabel);
         contentPane.add(dateChooser);
 
         // Importance field
-        JLabel importanceLabel = new JLabel("Nivel de Importancia (1-5):");
-        Integer[] importanceLevels = {1, 2, 3, 4, 5};
+        JLabel importanceLabel = new JLabel("Nivel de Importancia:");
+        Integer[] importanceLevels = { 1, 2, 3, 4, 5 };
         importanceComboBox = new JComboBox<>(importanceLevels);
-        importanceComboBox.setBackground(Color.WHITE);
         contentPane.add(importanceLabel);
         contentPane.add(importanceComboBox);
 
         // Hour field
-        JLabel hourLabel = new JLabel("Hora (Opcional):");
-        hourSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 23, 1)); // Spinner para horas (0-23)
-        hourSpinner.setBounds(10, 5, 142, 34);
-        minuteSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1)); // Spinner para minutos (0-59)
-        minuteSpinner.setBounds(171, 5, 147, 34);
-        JPanel timePanel = new JPanel();
-        timePanel.setBackground(Color.WHITE);
-        timePanel.setLayout(null);
-        timePanel.add(hourSpinner);
-        JLabel label = new JLabel(":");
-        label.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        label.setBounds(162, 8, 14, 31);
-        timePanel.add(label);
-        timePanel.add(minuteSpinner);
-        contentPane.add(hourLabel);
-        contentPane.add(timePanel);
+        hourSpinner = new JSpinner(new SpinnerDateModel());
+        hourSpinner.setBackground(Color.WHITE);
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(hourSpinner, "HH:mm"); // Formato de 24 horas
+        hourSpinner.setEditor(timeEditor);
+        hourSpinner.setValue(new Date()); // Hora actual por defecto
+        hourSpinner.setEnabled(false); // Deshabilitar hasta que se seleccione el checkbox
 
-        // Description field
-        JLabel descriptionLabel = new JLabel("Descripción (Opcional):");
+        // Avance de 15 minutos en el spinner
+        hourSpinner.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        contentPane.add(panel);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
+        // Hour label and checkbox
+        JLabel hourLabel = new JLabel("Hora (Opcional):");
+        panel.add(hourLabel);
+
+        hourCheckBox = new JCheckBox("¿Agregar Hora?");
+        hourCheckBox.setFont(new Font("Tahoma", Font.BOLD, 11));
+        hourCheckBox.setBackground(new Color(255, 132, 135));
+        panel.add(hourCheckBox);
+        hourCheckBox.setSelected(false); // Default: not selected
+        hourCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hourSpinner.setEnabled(hourCheckBox.isSelected());
+            }
+        });
+        contentPane.add(hourSpinner);
+
+        // Description area and checkbox
         descriptionArea = new JTextArea();
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setEnabled(false); // Deshabilitar hasta que se seleccione el checkbox
+
         JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
-        contentPane.add(descriptionLabel);
+
+        JPanel panel_1 = new JPanel();
+        panel_1.setBackground(Color.WHITE);
+        contentPane.add(panel_1);
+        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+
+        JLabel descriptionLabel = new JLabel("Descripción (Opcional):");
+        panel_1.add(descriptionLabel);
+
+        JCheckBox descriptionCheckBox = new JCheckBox("¿Agregar Descripción?");
+        descriptionCheckBox.setFont(new Font("Tahoma", Font.BOLD, 11));
+        descriptionCheckBox.setBackground(new Color(255, 132, 135));
+        descriptionCheckBox.setSelected(false); // Default: not selected
+        descriptionCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                descriptionArea.setEnabled(descriptionCheckBox.isSelected());
+            }
+        });
+        panel_1.add(descriptionCheckBox);
+
         contentPane.add(descriptionScroll);
 
         // Submit button
@@ -100,24 +144,22 @@ public class AddActivityJFrame extends JFrame {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleSubmit();
+                handleSubmit(fundamental);
             }
         });
         contentPane.add(submitButton);
-        
-        // Adjusting the layout
-        contentPane.add(new JLabel()); // Empty cell for layout balance
+
+        // Empty label for layout balance
+        contentPane.add(new JLabel());
     }
 
-    private void handleSubmit() {
+    private void handleSubmit(H_Fundamental fundamental) {
         String name = nameField.getText().trim();
-        java.util.Date date = dateChooser.getDate(); // Obtener la fecha desde JDateChooser
+        Date date = dateChooser.getDate();
         Integer importance = (Integer) importanceComboBox.getSelectedItem();
-        Integer hour = (Integer) hourSpinner.getValue(); // Obtener la hora
-        Integer minute = (Integer) minuteSpinner.getValue(); // Obtener el minuto
         String description = descriptionArea.getText().trim();
 
-        // Validate required fields
+        // Validar campos obligatorios
         if (name.isEmpty()) {
             JOptionPane.showMessageDialog(this, "El nombre es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -127,16 +169,39 @@ public class AddActivityJFrame extends JFrame {
             return;
         }
 
-        // Process the data (e.g., store it, print it, etc.)
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String time = String.format("%02d:%02d", hour, minute); // Formatear la hora
-        String message = "Actividad Agregada:\n" +
-                         "Nombre: " + name + "\n" +
-                         "Fecha: " + dateFormat.format(date) + "\n" +
-                         "Nivel de Importancia: " + importance + "\n" +
-                         "Hora: " + time + "\n" +
-                         "Descripción: " + description;
+        // Convertir Date a LocalDate
+        LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String message = "Actividad Agregada:\n" +
+                "Nombre: " + name + "\n" +
+                "Fecha: " + dateFormat.format(date) + "\n" +
+                "Nivel de Importancia: " + importance + "\n";
+
+        // Procesar la hora si se seleccionó
+        LocalTime localTime = null;
+        if (hourCheckBox.isSelected()) {
+            Date hour = (Date) hourSpinner.getValue();
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+            localTime = hour.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
+            message += "Hora: " + timeFormat.format(hour) + "\n";
+        } else {
+            message += "Hora: No especificada\n";
+        }
+
+        // Procesar la descripción si se seleccionó
+        if (!descriptionArea.isEnabled()) {
+            description = "No especificada";
+        }
+
+        message += "Descripción: " + description;
+
+        // Mostrar el mensaje
         JOptionPane.showMessageDialog(this, message, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        // Crear y retornar el objeto Activity
+        fundamental.TempActivities.insert(new Activity(name, localDate, importance, localTime, description));
+        // Cerrar el JFrame
+        this.dispose();
     }
 }
